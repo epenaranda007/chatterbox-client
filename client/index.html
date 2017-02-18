@@ -4,8 +4,9 @@
     <meta charset="utf-8">
     <title>chatterbox</title>
     <link rel="stylesheet" href="styles/styles.css">
-
     <!-- dependencies -->
+    <script src="/Users/student/Desktop/hrsf72-chatterbox-client/client/env"></script>
+    <script src="bower_components/underscore/underscore.js"></script>
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script>
       // YOU DO NOT NEED TO EDIT THIS CODE
@@ -26,7 +27,21 @@
     <div id="main">
       <h1>chatterbox</h1>
       <!-- Your HTML goes here! -->
+      <h5>Room</h5>
+      <select>
+        <option value="room1">Room 1</option>
+        <option value="room1">Room 2</option>
+        <!-- <option value="mercedes">Mercedes</option> -->
+        <!-- <option value="audi">Audi</option> -->
+      </select>
+      <input id="textBox" type="text" name="message">
+      <div id="send">
+        <input type="submit" class="submit">
+      </div>
+      <!-- <textarea></textarea> -->
     </div>
-    <div id="chats"></div>
+    <div id="chats">
+    
+    </div>
   </body>
 </html>
