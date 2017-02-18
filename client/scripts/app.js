@@ -4,7 +4,10 @@ var roomFilter, refreshPage;
 var app = {
   init: function() {   
 
-    $('.username').on('click', app.handleUsernameClick);
+    // $('#chats').on('click', '.username', app.handleUsernameClick);
+    $('#chats').on('click', '.username', function() {
+      $(this).addClass('friend');
+    });
 
     $('#send').on('click', '.submit', app.handleSubmit);
 
@@ -53,8 +56,8 @@ var app = {
       data: JSON.stringify(message),
       contentType: 'application/json',
       success: function (data) {
-        console.log('app.send method worked.');
-        console.log(data);
+        // console.log('app.send method worked.');
+        // console.log(data);
       },
       error: function (data) {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -67,12 +70,12 @@ var app = {
 
     $.ajax({
   // This is the url you should use to communicate with the parse API server.
-      url: url + '?limit=10&&order=-createdAt',
+      url: url + '?limit=100&&order=-createdAt',
       type: 'GET',
       contentType: 'application/json',
       success: function (data) {
-        console.log('app.fetch method worked.');
-        console.log(data);
+        // console.log('app.fetch method worked.');
+        // console.log(data);
         app.clearMessages();
         if (roomFilter) { 
           app.renderRoom(data);
@@ -108,10 +111,9 @@ var app = {
     // if (message.username.contains('</script>')) {
     //   message.username = 'filter';
     // }
-    console.log(app.hasEscapeCharacters(message.username) || app.hasEscapeCharacters(message.text));
     var $message;
     if (!app.hasEscapeCharacters(message.username) && !app.hasEscapeCharacters(message.text)) {
-      $message = $('<div class="messageContainer"><div class="username"><strong>' + message.username + '</strong>:</div><div class="message"><strong>' + message.text + '</strong></div></div>'); 
+      $message = $('<div class="messageContainer"><div class="username">' + message.username + ':</div><div class="message">' + message.text + '</div></div>'); 
       $('#chats').append($message);  
     }
   },
@@ -126,10 +128,10 @@ var app = {
     //$('#roomSelect').append($room);
   },
 
-  handleUsernameClick: function() {
-    console.log('Hello');
-    $('.username').addClass('friend');
-  },
+  // handleUsernameClick: function() {
+  //   console.log('Hello');
+  //   $('.username').addClass('friend');
+  // },
 
   handleSubmit: function() {
     var $message = $('#message').val();
