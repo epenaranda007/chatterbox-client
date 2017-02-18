@@ -1,6 +1,6 @@
 var url = 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages';
 var rooms = {};
-var roomFilter;
+var roomFilter, refreshPage;
 var app = {
   init: function() {   
 
@@ -31,7 +31,11 @@ var app = {
     });
     
     $('#roomSelect').on('click', function() {
-      
+      // var $addRoomInput = $('#addRoomInput').val();
+      // roomFilter = $addRoomInput;
+      // $('#addRoomInput').val('');
+      // app.send({'roomname': $addRoomInput});
+      // //refreshPage();
     });
   },
 
@@ -138,7 +142,7 @@ $(document).ready(function( ) {
   $('.userName').text(username);
 
   //refreshes the page
-  var refreshPage = function() {
+  refreshPage = function() {
     console.log('refreshed');
     app.fetch(roomFilter);
     setTimeout(refreshPage, 3000);
