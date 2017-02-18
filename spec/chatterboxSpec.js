@@ -82,7 +82,7 @@ describe('chatterbox', function() {
         };
 
         app.renderMessage(message);
-        console.log($('#chats'));
+        
         expect($('#chats').children().length).to.equal(1);
       });
 
