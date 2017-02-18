@@ -25,18 +25,18 @@
   </head>
   <body>
     <div id="main">
-      <h1>chatterbox</h1>
+      <div class="userNameContainer"><div class="userName"></div></div>
+      <h1>Chatterbox</h1>
       <!-- Your HTML goes here! -->
-      <h5>Room</h5>
-      <select>
-        <option value="room1">Room 1</option>
-        <option value="room1">Room 2</option>
-        <!-- <option value="mercedes">Mercedes</option> -->
-        <!-- <option value="audi">Audi</option> -->
-      </select>
-      <input id="textBox" type="text" name="message">
+      <div class="roomDropButton">
+      <strong>Room:</strong>
+        <select class="rooms">
+          <!-- <option value="lobby">lobby</option> -->
+        </select>
+      </div>
       <div id="send">
-        <input type="submit" class="submit">
+        <input id="textBox" type="text" name="message">
+        <a href="" class="submit">Submit</a>
       </div>
       <!-- <textarea></textarea> -->
     </div>

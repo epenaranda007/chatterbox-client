@@ -1,17 +1,40 @@
 var url = 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages';
+var rooms = {};
+var roomFilter;
 var app = {
   init: function() {   
-    $('.submit').on('click', function( ) {
-      var $chats = $('#chats');
-      var $text = $('#textBox').val();
-      var $message = $('<div><p>' + $text + '</p></div>');
-      $($chats).append($message);
-    });
+    // $('.submit').on('click', function( ) {
+    //   var $chats = $('#chats');
+    //   var $text = $('#textBox').val();
+    //   var $message = $('<div><p>' + $text + '</p></div>');
+    //   $($chats).append($message);
+    // });
 
     $('#main').on('click', '.username', this.handleUsernameClick);
 
     $('#send').on('click', '.submit', this.handleSubmit);
+
+    //change username
+    $('.userNameContainer').on('click', '.userName', function() {
+      var $inputField = $('<input type="text" class="userNameInput">');
+      $('.userName').remove();
+      $('.userNameContainer').append($inputField);
+    });
      
+    $('.userNameContainer').on('keypress', '.userNameInput', function(event) {
+      // 13 means enter key
+      if(event.which === 13) {
+        var $username = $('<div class="userName">' + $('.userNameInput').val() + '</div>');
+        $('.userNameInput').remove();
+        $('.userNameContainer').append($username);
+      }
+    });
+
+    $('.rooms').change(function() {
+      var $selectedRoom = $('.rooms').val();
+      roomFilter = $selectedRoom;
+      app.fetch($selectedRoom);
+    });
   
   },
 
@@ -24,6 +47,7 @@ var app = {
       contentType: 'application/json',
       success: function (data) {
         console.log('app.send method worked.');
+        console.log(data);
       },
       error: function (data) {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -32,21 +56,26 @@ var app = {
     });
   },
 
-  fetch: function() {
+  fetch: function(filter) {
 
     $.ajax({
   // This is the url you should use to communicate with the parse API server.
-      url: url + '?limit=500&&order=createdAt',
+      url: url + '?limit=110&&order=-createdAt',
       type: 'GET',
       contentType: 'application/json',
       success: function (data) {
         console.log('app.fetch method worked.');
-        console.log(data);
-        app.clearMessages;
-        _.each(data.results, function(obj) {
-          app.renderMessage(obj);
-        });
-
+        //console.log(data);
+        app.clearMessages();
+        if (filter) {
+          app.renderRoom(data);
+        } else {
+          _.each(data.results, function(obj) {
+            rooms[obj.roomname] = obj.roomname;
+            app.renderMessage(obj);
+          });
+        }
+        updateRoomsOption();
       },
       error: function (data) {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -60,13 +89,18 @@ var app = {
   },
 
   renderMessage: function(message) {
-    var $message = $('<div class="messageContainer"><div class= "username"><strong>' + message.username + '</strong>:</div><div class="message">' + message.text + '</div></div>');
-    $('#chats').prepend($message);
+    var $message = $('<div class="messageContainer"><div class= "username"><strong>' + message.username + '</strong>:</div><div class="message"><strong>' + message.text + '</strong></div></div>');
+    $('#chats').append($message);
   },
 
-  renderRoom: function(room) {
-    var $room = $('<div class="testPls">' + message.text + '</div>');
-    $('#roomSelect').append($room);
+  renderRoom: function(data) {
+    _.filter(data.results, function(obj) {
+      if(obj.roomname === roomFilter) {
+        app.renderMessage(obj);
+      }
+    });
+    //var $room = $('<div class="testPls">' + message.text + '</div>');
+    //$('#roomSelect').append($room);
   },
 
   handleUsernameClick: function() {
@@ -76,7 +110,7 @@ var app = {
   handleSubmit: function() {
     var $message = $('#message').val();
     // this.send($message);
-    console.log('trigger');
+    //console.log('trigger');
   }, 
 
 
@@ -88,16 +122,31 @@ var app = {
 $(document).ready(function( ) {
   app.init();  
   app.fetch();
-  // refreshPage();
-  // var refreshPage = function() {
-  //   console.log('refreshed');
-  //   app.fetch();
-  //   setTimeout(refreshPage, 5000);
-  // };
+
   
-  
+  // displaying username
+  var bar = window.location.href.split('?');
+  var username = bar[1].split('=')[1];
+  console.log(username);
+  $('.userName').text(username);
+
+  //refreshes the page
+  var refreshPage = function() {
+    console.log('refreshed');
+    app.fetch(roomFilter);
+    setTimeout(refreshPage, 15000);
+  };
+  refreshPage();
 
 });
+
+var updateRoomsOption = function() {
+  for (var key in rooms) { 
+    var $room = $('<option>', {value:key , text: key});
+    $('.rooms').append($room);
+  }
+};
+
 
 
 

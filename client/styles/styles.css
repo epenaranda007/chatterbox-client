@@ -95,10 +95,36 @@ form input[type=text] {
     border: 5px solid orange;
 }
 
-#textBox, #send {
+#send {
+    margin: 10px 10px;    
+}
+
+#textBox {
+    display: inline-block;
+    width: 410px;
+}
+
+.roomDropButton {
     display: inline-block;
 }
 
+a {
+    text-decoration: none;
+}
 
+.submit {
+    text-decoration: none;
+    background-color: #e3eaf4;
+    border-radius: 4px;
+    padding: 2px 2px;
+}
+
+.userNameContainer {
+    float: right;
+}
+
+select {
+    width: 200px;
+}
 
 
