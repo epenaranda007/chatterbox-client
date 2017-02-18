@@ -88,3 +88,17 @@ form input[type=text] {
     background-color: #0090da;
 }
 
+.messageContainer {
+    background-color: #ff00ee;
+    margin-bottom: 5px;
+    padding: 10px 10px;
+    border: 5px solid orange;
+}
+
+#textBox, #send {
+    display: inline-block;
+}
+
+
+
+

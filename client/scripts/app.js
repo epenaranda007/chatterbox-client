@@ -1,25 +1,23 @@
+var url = 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages';
 var app = {
   init: function() {   
-    
-    // $('.submit').on('click', function( ) {
-    //   // debugger;
-    //   var $chats = $('#chats');
-    //   var $text = $('#textBox').val();
-    //   var $message = $('<div><p>' + $text + '</p></div>');
-    //   $($chats).append($message);
-    // });
+    $('.submit').on('click', function( ) {
+      var $chats = $('#chats');
+      var $text = $('#textBox').val();
+      var $message = $('<div><p>' + $text + '</p></div>');
+      $($chats).append($message);
+    });
 
     $('#main').on('click', '.username', this.handleUsernameClick);
 
-    // $('#send').on('click', '.submit', this.handleSubmit);
-    $('#send .submit').on('click', this.handleSubmit);
+    $('#send').on('click', '.submit', this.handleSubmit);
 
   },
 
   send: function(message) {
     $.ajax({
   // This is the url you should use to communicate with the parse API server.
-      url: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
+      url: url,
       type: 'POST',
       data: JSON.stringify(message),
       contentType: 'application/json',
@@ -33,21 +31,28 @@ var app = {
     });
   },
 
-  fetch: function(message) {
+  fetch: function() {
+
     $.ajax({
   // This is the url you should use to communicate with the parse API server.
-      //url: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
+      url: url,
       type: 'GET',
-      data: JSON.stringify(message),
       contentType: 'application/json',
       success: function (data) {
         console.log('app.fetch method worked.');
+        console.log(data);
+        
+        _.each(data.results, function(obj) {
+          app.renderMessage(obj);
+        });
+
       },
       error: function (data) {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
         console.error('chatterbox: Failed to send message', data);
       }
     });
+
   },
 
   clearMessages: function() {
@@ -55,7 +60,7 @@ var app = {
   },
 
   renderMessage: function(message) {
-    var $message = $('<div class="messageContainer"><div class= "username">' + message.username + '</div><div class="message">' + message.text + '</div></div>');
+    var $message = $('<div class="messageContainer"><div class= "username"><strong>' + message.username + '</strong>:</div><div class="message">' + message.text + '</div></div>');
     $('#chats').append($message);
   },
 
@@ -65,30 +70,26 @@ var app = {
   },
 
   handleUsernameClick: function() {
-  
+    
   },
 
   handleSubmit: function() {
     var $message = $('#message').val();
-    this.send(message);
-    console.log('handleSubmit');
+    // this.send($message);
+    console.log('trigger');
   }
 
 
 };
 
 $(document).ready(function( ) {
-  app.init();    
+  app.init();  
+
+  app.fetch();
+  
+
 });
 
-// var User = function() {
-//   this.username = '';
-//   this.friends = {};
-// };
-
-// var Room = function() {
-
-// };
 
 
 
