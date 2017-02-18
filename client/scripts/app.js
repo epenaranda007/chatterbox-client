@@ -27,15 +27,28 @@ var app = {
     $('.rooms').change(function() {
       var $selectedRoom = $('.rooms').val();
       roomFilter = $selectedRoom;
-      app.fetch($selectedRoom);
+      app.fetch();
     });
     
     $('#roomSelect').on('click', function() {
-      // var $addRoomInput = $('#addRoomInput').val();
-      // roomFilter = $addRoomInput;
-      // $('#addRoomInput').val('');
-      // app.send({'roomname': $addRoomInput});
-      // //refreshPage();
+      //get the value from the input field
+      //add it to the server
+      //Add the value to the drop down menu
+      //Make the value the selected 
+      //should refresh all of the messages for that room
+      //should filter the data of that room
+
+
+
+
+      var $addRoomInput = $('#addRoomInput').val();
+      roomFilter = $addRoomInput;
+      $('#addRoomInput').val('');
+      app.send({'roomname': $addRoomInput});
+      app.fetch();
+      // var $selected = $('.rooms');
+      // $($selected).val($addRoomInput).change();
+
     });
   },
 
@@ -68,7 +81,7 @@ var app = {
         console.log('app.fetch method worked.');
         console.log(data);
         app.clearMessages();
-        if (roomFilter) {
+        if (roomFilter) { 
           app.renderRoom(data);
         } else {
           _.each(data.results, function(obj) {
@@ -76,7 +89,7 @@ var app = {
             app.renderMessage(obj);
           });
         }
-        updateRoomsOption();
+        reloadRoomsOption();
       },
       error: function (data) {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -85,12 +98,20 @@ var app = {
     });
 
   },
+
+  // security: function(string) {
+  //   if (string)
+  // },
+
   clearMessages: function() {
     $('#chats').empty();
   },
 
   renderMessage: function(message) {
-    var $message = $('<div class="messageContainer"><div class= "username"><strong>' + message.username + '</strong>:</div><div class="message"><strong>' + message.text + '</strong></div></div>');
+    // if (message.username.contains('</script>')) {
+    //   message.username = 'filter';
+    // }
+    var $message = $('<div class="messageContainer"><div class= "username"><strong>' + message.username + '</strong>:</div><div class="message"><strong>' + message.text + '</strong></div></div>');   
     $('#chats').append($message);
   },
 
@@ -145,17 +166,20 @@ $(document).ready(function( ) {
   refreshPage = function() {
     console.log('refreshed');
     app.fetch(roomFilter);
-    setTimeout(refreshPage, 3000);
+    setTimeout(refreshPage, 15000);
   };
   refreshPage();
 
 });
 
-var updateRoomsOption = function() {
+var reloadRoomsOption = function() {
   $('.rooms').empty();
   for (var key in rooms) { 
     var $room = $('<option>', {value: key, text: key});
     $('.rooms').append($room);
+  }
+  if (roomFilter) {
+    $('.rooms').val(roomFilter);
   }
 };
 
