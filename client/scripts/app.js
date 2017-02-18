@@ -4,7 +4,7 @@ var roomFilter, refreshPage;
 var app = {
   init: function() {   
 
-    $('#main').on('click', '.username', app.handleUsernameClick);
+    $('.username').on('click', app.handleUsernameClick);
 
     $('#send').on('click', '.submit', app.handleSubmit);
 
@@ -31,15 +31,6 @@ var app = {
     });
     
     $('#roomSelect').on('click', function() {
-      //get the value from the input field
-      //add it to the server
-      //Add the value to the drop down menu
-      //Make the value the selected 
-      //should refresh all of the messages for that room
-      //should filter the data of that room
-
-
-
 
       var $addRoomInput = $('#addRoomInput').val();
       roomFilter = $addRoomInput;
@@ -48,8 +39,10 @@ var app = {
       app.fetch();
       // var $selected = $('.rooms');
       // $($selected).val($addRoomInput).change();
-
     });
+
+
+
   },
 
   send: function(message) {
@@ -99,9 +92,13 @@ var app = {
 
   },
 
-  // security: function(string) {
-  //   if (string)
-  // },
+  hasEscapeCharacters: function(string) {
+    var pattern = new RegExp(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/); 
+    if (pattern.test(string)) {
+      return true;
+    }
+    return false;
+  },
 
   clearMessages: function() {
     $('#chats').empty();
@@ -111,8 +108,12 @@ var app = {
     // if (message.username.contains('</script>')) {
     //   message.username = 'filter';
     // }
-    var $message = $('<div class="messageContainer"><div class= "username"><strong>' + message.username + '</strong>:</div><div class="message"><strong>' + message.text + '</strong></div></div>');   
-    $('#chats').append($message);
+    console.log(app.hasEscapeCharacters(message.username) || app.hasEscapeCharacters(message.text));
+    var $message;
+    if (!app.hasEscapeCharacters(message.username) && !app.hasEscapeCharacters(message.text)) {
+      $message = $('<div class="messageContainer"><div class="username"><strong>' + message.username + '</strong>:</div><div class="message"><strong>' + message.text + '</strong></div></div>'); 
+      $('#chats').append($message);  
+    }
   },
 
   renderRoom: function(data) {
@@ -126,7 +127,8 @@ var app = {
   },
 
   handleUsernameClick: function() {
-    
+    console.log('Hello');
+    $('.username').addClass('friend');
   },
 
   handleSubmit: function() {
@@ -134,7 +136,7 @@ var app = {
     var $username = $('.userName').text();
     var $roomname = $('.rooms').val();
     var $text = $('#textBox').val();
-    console.log($username);
+    //console.log($username);
 
     var submitObject = {
       'username': $username,
@@ -143,6 +145,7 @@ var app = {
     };
     app.send(submitObject);
     $('#textBox').val('');
+    app.fetch();
   }, 
 
 
