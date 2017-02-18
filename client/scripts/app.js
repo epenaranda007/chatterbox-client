@@ -3,16 +3,10 @@ var rooms = {};
 var roomFilter;
 var app = {
   init: function() {   
-    // $('.submit').on('click', function( ) {
-    //   var $chats = $('#chats');
-    //   var $text = $('#textBox').val();
-    //   var $message = $('<div><p>' + $text + '</p></div>');
-    //   $($chats).append($message);
-    // });
 
-    $('#main').on('click', '.username', this.handleUsernameClick);
+    $('#main').on('click', '.username', app.handleUsernameClick);
 
-    $('#send').on('click', '.submit', this.handleSubmit);
+    $('#send').on('click', '.submit', app.handleSubmit);
 
     //change username
     $('.userNameContainer').on('click', '.userName', function() {
@@ -23,7 +17,7 @@ var app = {
      
     $('.userNameContainer').on('keypress', '.userNameInput', function(event) {
       // 13 means enter key
-      if(event.which === 13) {
+      if (event.which === 13) {
         var $username = $('<div class="userName">' + $('.userNameInput').val() + '</div>');
         $('.userNameInput').remove();
         $('.userNameContainer').append($username);
@@ -35,7 +29,10 @@ var app = {
       roomFilter = $selectedRoom;
       app.fetch($selectedRoom);
     });
-  
+    
+    $('#roomSelect').on('click', function() {
+      
+    });
   },
 
   send: function(message) {
@@ -56,18 +53,18 @@ var app = {
     });
   },
 
-  fetch: function(filter) {
+  fetch: function() {
 
     $.ajax({
   // This is the url you should use to communicate with the parse API server.
-      url: url + '?limit=110&&order=-createdAt',
+      url: url + '?limit=10&&order=-createdAt',
       type: 'GET',
       contentType: 'application/json',
       success: function (data) {
         console.log('app.fetch method worked.');
-        //console.log(data);
+        console.log(data);
         app.clearMessages();
-        if (filter) {
+        if (roomFilter) {
           app.renderRoom(data);
         } else {
           _.each(data.results, function(obj) {
@@ -95,7 +92,7 @@ var app = {
 
   renderRoom: function(data) {
     _.filter(data.results, function(obj) {
-      if(obj.roomname === roomFilter) {
+      if (obj.roomname === roomFilter) {
         app.renderMessage(obj);
       }
     });
@@ -109,8 +106,18 @@ var app = {
 
   handleSubmit: function() {
     var $message = $('#message').val();
-    // this.send($message);
-    //console.log('trigger');
+    var $username = $('.userName').text();
+    var $roomname = $('.rooms').val();
+    var $text = $('#textBox').val();
+    console.log($username);
+
+    var submitObject = {
+      'username': $username,
+      'text': $text,
+      'roomname': $roomname
+    };
+    app.send(submitObject);
+    $('#textBox').val('');
   }, 
 
 
@@ -127,22 +134,23 @@ $(document).ready(function( ) {
   // displaying username
   var bar = window.location.href.split('?');
   var username = bar[1].split('=')[1];
-  console.log(username);
+  //console.log(username);
   $('.userName').text(username);
 
   //refreshes the page
   var refreshPage = function() {
     console.log('refreshed');
     app.fetch(roomFilter);
-    setTimeout(refreshPage, 15000);
+    setTimeout(refreshPage, 3000);
   };
   refreshPage();
 
 });
 
 var updateRoomsOption = function() {
+  $('.rooms').empty();
   for (var key in rooms) { 
-    var $room = $('<option>', {value:key , text: key});
+    var $room = $('<option>', {value: key, text: key});
     $('.rooms').append($room);
   }
 };
