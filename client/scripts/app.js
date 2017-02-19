@@ -1,12 +1,15 @@
 var url = 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages';
 var rooms = {};
 var roomFilter, refreshPage;
+var friends = {};
 var app = {
   init: function() {   
-
-    // $('#chats').on('click', '.username', app.handleUsernameClick);
     $('#chats').on('click', '.username', function() {
       $(this).addClass('friend');
+      var temp = $(this).text();
+      var username = temp.substring(0, temp.length - 1);
+      friends[username] = username;
+
     });
 
     $('#send').on('click', '.submit', app.handleSubmit);
@@ -40,8 +43,6 @@ var app = {
       $('#addRoomInput').val('');
       app.send({'roomname': $addRoomInput});
       app.fetch();
-      // var $selected = $('.rooms');
-      // $($selected).val($addRoomInput).change();
     });
 
 
@@ -50,17 +51,13 @@ var app = {
 
   send: function(message) {
     $.ajax({
-  // This is the url you should use to communicate with the parse API server.
       url: url,
       type: 'POST',
       data: JSON.stringify(message),
       contentType: 'application/json',
       success: function (data) {
-        // console.log('app.send method worked.');
-        // console.log(data);
       },
       error: function (data) {
-        // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
         console.error('chatterbox: Failed to send message', data);
       }
     });
@@ -69,13 +66,10 @@ var app = {
   fetch: function() {
 
     $.ajax({
-  // This is the url you should use to communicate with the parse API server.
-      url: url + '?limit=100&&order=-createdAt',
+      url: url + '?limit=20&&order=-createdAt',
       type: 'GET',
       contentType: 'application/json',
       success: function (data) {
-        // console.log('app.fetch method worked.');
-        // console.log(data);
         app.clearMessages();
         if (roomFilter) { 
           app.renderRoom(data);
@@ -88,7 +82,6 @@ var app = {
         reloadRoomsOption();
       },
       error: function (data) {
-        // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
         console.error('chatterbox: Failed to send message', data);
       }
     });
@@ -108,13 +101,17 @@ var app = {
   },
 
   renderMessage: function(message) {
-    // if (message.username.contains('</script>')) {
-    //   message.username = 'filter';
-    // }
+
     var $message;
-    if (!app.hasEscapeCharacters(message.username) && !app.hasEscapeCharacters(message.text)) {
-      $message = $('<div class="messageContainer"><div class="username">' + message.username + ':</div><div class="message">' + message.text + '</div></div>'); 
-      $('#chats').append($message);  
+    if (!app.hasEscapeCharacters(message.username) && 
+        !app.hasEscapeCharacters(message.text) &&
+        message.username && message.text) {
+      if (friends[message.username]) { 
+        $message = $('<div class="messageContainer"><div class="username"><strong>' + message.username + '</strong>:</div><div class="message">' + message.text + '</div></div>');
+      } else {
+        $message = $('<div class="messageContainer"><div class="username">' + message.username + ':</div><div class="message">' + message.text + '</div></div>'); 
+      } 
+      $('#chats').append($message); 
     }
   },
 
@@ -124,21 +121,14 @@ var app = {
         app.renderMessage(obj);
       }
     });
-    //var $room = $('<div class="testPls">' + message.text + '</div>');
-    //$('#roomSelect').append($room);
   },
 
-  // handleUsernameClick: function() {
-  //   console.log('Hello');
-  //   $('.username').addClass('friend');
-  // },
 
   handleSubmit: function() {
     var $message = $('#message').val();
     var $username = $('.userName').text();
     var $roomname = $('.rooms').val();
     var $text = $('#textBox').val();
-    //console.log($username);
 
     var submitObject = {
       'username': $username,
@@ -150,10 +140,6 @@ var app = {
     app.fetch();
   }, 
 
-
-
-
-
 };
 
 $(document).ready(function( ) {
@@ -164,14 +150,13 @@ $(document).ready(function( ) {
   // displaying username
   var bar = window.location.href.split('?');
   var username = bar[1].split('=')[1];
-  //console.log(username);
   $('.userName').text(username);
 
   //refreshes the page
   refreshPage = function() {
     console.log('refreshed');
     app.fetch(roomFilter);
-    setTimeout(refreshPage, 15000);
+    setTimeout(refreshPage, 5000);
   };
   refreshPage();
 
@@ -183,7 +168,7 @@ var reloadRoomsOption = function() {
     var $room = $('<option>', {value: key, text: key});
     $('.rooms').append($room);
   }
-  if (roomFilter) {
+  if (roomFilter) { 
     $('.rooms').val(roomFilter);
   }
 };
